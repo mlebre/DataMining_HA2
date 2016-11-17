@@ -26,16 +26,23 @@ class APriori:
 		self.set=dict() # deletion of the previous set
 		for line in fi:
 			line=line.split(' ')
-			line.remove('\n')			
-			i=0
+			line.remove('\n')
 			if self.processing==0:
-				while i+self.processing < len(line):
-					if line[i] not in self.set.keys():
-						# item not yet appear
-						self.set[line[i]]=1
-					else:
-						self.set[line[i]]=self.set[line[i]]+1
-					i+=1
+				self.firstProcess(line)
+		fi.close()
+
+	def firstProcess(self, line):
+		''' Application of first processing of Apriori alogirithm
+		'''
+		i=0
+		while i+self.processing < len(line):
+			if line[i] not in self.set.keys():
+				# item not yet appear
+				self.set[line[i]]=1
+			else:
+				self.set[line[i]]=self.set[line[i]]+1
+			i+=1
+
 
 
 
