@@ -40,39 +40,57 @@ class APriori:
 		'''
 		i=0
 		while i+self.processing < len(line):
-			hashed=hash(line[i]) # we hash the item
-			if hashed not in self.set:
+			if line[i] not in self.set:
 				# item not yet appear
-				self.set.append(hashed)
+				self.set.append(line[i])
 				self.set.append(1)
 			else:
-				self.set[self.set.index(hashed)+1]=self.set[self.set.index(hashed)+1]+1
+				self.set[self.set.index(line[i])+1]=self.set[self.set.index(line[i])+1]+1
 			i+=1
 
 	def process(self,line):
-		print '\nPROCESS'
 		for i in xrange(len(line)-self.processing):
-			item1=line[i:i+self.processing]
-			if str(item1).strip('[]\'') in self.freq_subset:				
+			add=True
+			item1=list()
+			for k in xrange(self.processing):
+				item1.append(line[i+k])
+			if str(item1).strip('[]\'') in self.freq_subset:
 				for j in xrange(i+1,len(line)-self.processing):
-					item2=line[j:j+self.processing]
-					#if str(item2).strip('[]\'') in self.freq_subset:
-						#print item1, item2
-
+					item2=list()
+					for k in xrange(self.processing):
+						item2.append(line[j+k])
+					if str(item2).strip('[]\'') in self.freq_subset:
+						item1=set(item1)
+						item2=set(item2)
+						if list(item1.union(item2)) not in self.set:
+							self.set.append(list(item1.union(item2)))
+							self.set.append(1)
+						else:
+							self.set[self.set.index(list(item1.union(item2)))+1]=self.set[self.set.index(list(item1.union(item2)))+1]+1					
 				
-
 
 	def pass2(self):
 		self.freq_subset=list()
 		i=0
 		while i <len(self.set):
-			if float(self.set[i+1])/(len(self.set)/(self.processing+1))>=self.s: 
+			if float(self.set[i+1])/(0.5*len(self.set))>=self.s: 
 			# Dividing with self.process+1 because set contains the count of each item
 				self.freq_subset.append(self.set[i])
-			i+=2
+			i+=2 # avoid the count of item
 
 
 
+	def algoApplication(self):
+		''' Application of the apriori algorithm to find the frequent items of length k
+		'''
+		print '\n--------------------------------'
+		print 'Apriori algorithm to find subsets of length', self.k, 'with a threshold of', self.s, 'in file', self.name,'\n'
+		for i in xrange(self.k):
+			print 'Application number:', i
+			self.pass1()
+			self.pass2()
+		print 'Frequent items with k members:'
+		print self.freq_subset
 
 ###########################################################
 #                Function defintion
@@ -87,14 +105,7 @@ class APriori:
 ###########################################################
 
 file_name=sys.argv[1]
-T=0.05
+T=0.01
 
 AP=APriori(file_name,2,T)
-AP.pass1()
-print 'Singleton search'
-print AP.set
-print 'Frequent item set'
-print 'threshold:', AP.s
-AP.pass2()
-print AP.freq_subset
-AP.pass1()
+AP.algoApplication()
