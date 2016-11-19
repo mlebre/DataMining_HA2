@@ -40,12 +40,13 @@ class APriori:
 		'''
 		i=0
 		while i+self.processing < len(line):
-			if line[i] not in self.set:
+			hashed=hash(line[i]) # we hash the item
+			if hashed not in self.set:
 				# item not yet appear
-				self.set.append(line[i])
+				self.set.append(hashed)
 				self.set.append(1)
 			else:
-				self.set[self.set.index(line[i])+1]=self.set[self.set.index(line[i])+1]+1
+				self.set[self.set.index(hashed)+1]=self.set[self.set.index(hashed)+1]+1
 			i+=1
 
 	def process(self,line):
@@ -55,8 +56,8 @@ class APriori:
 			if str(item1).strip('[]\'') in self.freq_subset:				
 				for j in xrange(i+1,len(line)-self.processing):
 					item2=line[j:j+self.processing]
-					if str(item2).strip('[]\'') in self.freq_subset:
-						print item1, item2
+					#if str(item2).strip('[]\'') in self.freq_subset:
+						#print item1, item2
 
 				
 
@@ -91,7 +92,7 @@ T=0.05
 AP=APriori(file_name,2,T)
 AP.pass1()
 print 'Singleton search'
-#print AP.set
+print AP.set
 print 'Frequent item set'
 print 'threshold:', AP.s
 AP.pass2()
